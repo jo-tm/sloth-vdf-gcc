@@ -1,23 +1,28 @@
-#include "sloth_permutation.h"
 #include <stdio.h>
+#include <gmp.h>
+#include "sloth_permutation.h"
 
 int main() {
     SlothPermutation* sp = sloth_permutation_new();
-    if (!sp) {
-        printf("Failed to create SlothPermutation instance.\n");
-        return 1;
-    }
 
-    int64_t x = 123456789;
-    int64_t t = 10;
-    int64_t y = sloth_permutation_mod_op(sp, x, t);
+    mpz_t t, x, y;
+    mpz_init_set_ui(t, 100);
+    mpz_init_set_str(x, "12345678901234567890", 10);
+    mpz_init(y);
 
-    printf("Original value: %lld\n", x);
-    printf("Modified value: %lld\n", y);
+    sloth_permutation_mod_op(sp, y, x, t);
 
-    bool verification = sloth_permutation_mod_verif(sp, y, x, t);
-    printf("Verification: %s\n", verification ? "true" : "false");
+    printf("Generated proof: ");
+    mpz_out_str(stdout, 10, y);
+    printf("\n");
 
+    bool is_valid = sloth_permutation_mod_verif(sp, y, x, t);
+    printf("Verification result: %s\n", is_valid ? "True" : "False");
+
+    mpz_clear(t);
+    mpz_clear(x);
+    mpz_clear(y);
     sloth_permutation_free(sp);
+
     return 0;
 }
