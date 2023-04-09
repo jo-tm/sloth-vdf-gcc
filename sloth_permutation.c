@@ -146,4 +146,29 @@ void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t o
     mpz_clears(y, big256, big8, temp, NULL);
 }
 
+SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset) {
+    if (offset + byte_len > byte_len) {
+        return NULL;
+    }
+    mpz_t result;
+    mpz_init(result);
+
+    for (size_t i = 0; i < byte_len; i++) {
+        mpz_t temp;
+        mpz_init_set_ui(temp, buffer[offset + i]);
+        mpz_mul_2exp(temp, temp, i * 8);
+        mpz_add(result, result, temp);
+        mpz_clear(temp);
+    }
+
+    SlothPermutation* sp = sloth_permutation_new();
+    sloth_permutation_set_mpz(sp, result);
+
+    mpz_clear(result);
+
+    return sp;
+}
+
+
+
 
