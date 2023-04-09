@@ -71,7 +71,7 @@ void sloth_permutation_mod_sqrt_op(SlothPermutation* sp, mpz_t result, mpz_t x) 
     mpz_clear(temp);
 }
 
-void sloth_permutation_mod_op(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t t) {
+void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t t) {
     mpz_mod(x, x, sp->p);
     for (mpz_t i; mpz_cmp(i, t) < 0; mpz_add_ui(i, i, 1)) {
         sloth_permutation_mod_sqrt_op(sp, x, x);
