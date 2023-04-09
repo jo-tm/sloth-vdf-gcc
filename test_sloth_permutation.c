@@ -16,8 +16,8 @@ void test_vdf01() {
     mpz_inits(x, t, y, NULL);
     mpz_set_ui(x, 10);
     mpz_set_ui(t, 50);
-    mpz_set_ui(SlothPermutation.p, 23);
-    mpz_mod(x, x, SlothPermutation.p);
+    mpz_set_ui(sp.p, 23);
+    mpz_mod(x, x, sp.p);
 
     // Generate proof
     sloth_generate_proof_vdf(&sp, y, x, t);
