@@ -1,193 +1,266 @@
+#include <assert.h>
+#include <gmp.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <gmp.h>
+#include <string.h>
 #include "sloth_permutation.h"
 
-#define HEX(x) #x
+void test_vdf01_generate_and_verify_small() {
+    mpz_t x, p, t, y;
+    bool verified;
 
-// Block time tests
+    mpz_init_set_ui(x, 10);
+    mpz_init_set_ui(p, 23);
+    mpz_init_set_ui(t, 50);
+    mpz_init(y);
 
-void test_vdf01() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    sloth_permutation_set_prime(sloth, "23");
+    mpz_mod(x, x, p);
 
-    mpz_t x, t, y;
-    mpz_inits(x, t, y, NULL);
+    sloth_generate_proof_vdf(t, x, p, y);
+    verified = sloth_verify_proof_vdf(t, x, p, y);
 
-    mpz_set_ui(x, 10);
-    mpz_mod(x, x, sloth->p);
-    mpz_set_ui(t, 50);
+    assert(verified);
 
-    sloth_permutation_generate_proof_vdf(sloth, y, t, x);
-    bool verified = sloth_permutation_verify_proof_vdf(sloth, t, x, y);
-    gmp_printf("[VDF01] generate and verify, small: %d\n", verified);
-
-    mpz_clears(x, t, y, NULL);
-    sloth_permutation_free(sloth);
+    mpz_clear(x);
+    mpz_clear(p);
+    mpz_clear(t);
+    mpz_clear(y);
 }
 
-void test_vdf02() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    sloth_permutation_set_prime(sloth, HEX(73237431696005972674723595250817150843));
+void test_vdf02_generate_and_verify_medium() {
+    mpz_t x, p, t, y;
+    bool verified;
 
-    mpz_t x, t, y;
-    mpz_inits(x, t, y, NULL);
+    mpz_init_set_str(x, "808080818080808080818080", 10);
+    mpz_init_set_str(p, "73237431696005972674723595250817150843", 10);
+    mpz_init_set_ui(t, 2000);
+    mpz_init(y);
 
-    mpz_set_str(x, "808080818080808080818080", 16);
-    mpz_mod(x, x, sloth->p);
-    mpz_set_ui(t, 2000);
+    mpz_mod(x, x, p);
 
-    sloth_permutation_generate_proof_vdf(sloth, y, t, x);
-    bool verified = sloth_permutation_verify_proof_vdf(sloth, t, x, y);
-    gmp_printf("[VDF02] generate and verify, medium: %d\n", verified);
+    sloth_generate_proof_vdf(t, x, p, y);
+    verified = sloth_verify_proof_vdf(t, x, p, y);
 
-    mpz_clears(x, t, y, NULL);
-    sloth_permutation_free(sloth);
+    assert(verified);
+
+    mpz_clear(x);
+    mpz_clear(p);
+    mpz_clear(t);
+    mpz_clear(y);
 }
 
-void test_vdf03() {
-    SlothPermutation* sloth = sloth_permutation_new();
+void test_vdf03_bigint_export_import_from_buffers() {
+    uint64_t x = ((uint64_t)0x789acdef << 32) + (uint64_t)0x06543210;
+    uint64_t y;
+    uint8_t buffer[8];
 
+    write_uint64_le(x, buffer);
+    y = read_uint64_le(buffer);
+
+    assert(x == y);
+}
+
+void test_vdf04_bigint_export_import_from_buffers_arbitrary_size_64() {
+    uint64_t x = ((uint64_t)0x789acdef << 32) + (uint64_t)0x06543210;
+    uint64_t y;
+    uint8_t buffer[8];
+
+    write_biguint_le(x, buffer, 8);
+    y = read_biguint_le(buffer, 8);
+
+    assert(x == y);
+}
+
+void test_vdf05_bigint_export_import_from_buffers_arbitrary_size_128() {
     mpz_t x, y;
-    mpz_inits(x, y, NULL);
+    uint8_t buffer[16];
 
-    mpz_set_ui(x, 0x789acdef);
+    mpz_init_set_ui(x, 0x789acdef);
     mpz_mul_2exp(x, x, 32);
     mpz_add_ui(x, x, 0x06543210);
+    mpz_init(y);
 
-    sloth_permutation_write_big_int_to_buffer(sloth, y, x, 8);
-    sloth_permutation_read_big_int_from_buffer(sloth, x, y);
+    mpz_mul_2exp(x, x, 64);
 
-    bool equal = (mpz_cmp(x, y) == 0);
-    gmp_printf("[VDF03] bigint export/import from buffers: %d\n", equal);
+    write_biguint_le_mpz(x, buffer, 16);
+    read_biguint_le_mpz(buffer, 16, y);
 
-    mpz_clears(x, y, NULL);
-    sloth_permutation_free(sloth);
+    assert(mpz_cmp(x, y) == 0);
+
+    mpz_clear(x);
+    mpz_clear(y);
 }
 
-void test_vdf04() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    mpz_t x, y;
-    mpz_inits(x, y, NULL);
+void test_vdf06_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_test() {
+    mpz_t p, t;
+    uint8_t challenge[16] = {0x13, 0x70, 0x10, 0x85, 0x18, 0x87, 0x94, 0x66, 0x22, 0x57, 0x41, 0x52, 0x57, 0x12, 0x39, 0x13};
+    uint8_t proof[16], proof2[16], proof3[16], proof4[16], proof5[16];
 
-    sloth_permutation_set_ui(sloth->p, 0);
-    mpz_setbit(sloth->p, 512);
-    mpz_nextprime(sloth->p, sloth->p);
+    mpz_init_set_str(p, "297010851887946822574352571639152315287", 10);
+    mpz_init_set_ui(t, 200);
 
-    mpz_set_ui(x, 0x789acdef);
-    mpz_mul_2exp(x, x, 32);
-    mpz_add_ui(x, x, 0x06543210);
+    sloth_permutation_set_prime(p);
 
-    sloth_permutation_write_big_int_to_buffer(sloth, y, x, 8);
-    sloth_permutation_read_big_int_from_buffer(sloth, x, y, 8);
+    generate_buffer_proof_vdf(t, challenge, 16, proof);
+    assert(verify_buffer_proof_vdf(t, challenge, proof, 16));
 
-    bool equal = (mpz_cmp(x, y) == 0);
-    gmp_printf("[VDF04] bigint export/import from buffers of arbitrary size = 64: %d\n", equal);
+    memcpy(challenge, proof, 16);
+    generate_buffer_proof_vdf(t, challenge, 16, proof2);
+    assert(verify_buffer_proof_vdf(t, challenge, proof2, 16));
 
-    mpz_clears(x, y, NULL);
-    sloth_permutation_free(sloth);
+    memcpy(challenge, proof2, 16);
+    generate_buffer_proof_vdf(t, challenge, 16, proof3);
+    assert(verify_buffer_proof_vdf(t, challenge, proof3, 16));
+
+    memcpy(challenge, proof3, 16);
+    generate_buffer_proof_vdf(t, challenge, 16, proof4);
+    assert(verify_buffer_proof_vdf(t, challenge, proof4, 16));
+
+    memcpy(challenge, proof4, 16);
+    generate_buffer_proof_vdf(t, challenge, 16, proof5);
+    assert(verify_buffer_proof_vdf(t, challenge, proof5, 16));
+
+    assert(memcmp(proof, proof2, 16) != 0);
+    assert(memcmp(proof, proof3, 16) != 0);
+    assert(memcmp(proof, proof4, 16) != 0);
+    assert(memcmp(proof, proof5, 16) != 0);
+    assert(memcmp(proof2, proof3, 16) != 0);
+    assert(memcmp(proof2, proof4, 16) != 0);
+    assert(memcmp(proof2, proof5, 16) != 0);
+    assert(memcmp(proof3, proof4, 16) != 0);
+    assert(memcmp(proof3, proof5, 16) != 0);
+    assert(memcmp(proof4, proof5, 16) != 0);
+
+    mpz_clear(p);
+    mpz_clear(t);
 }
 
-void test_vdf05() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    mpz_t x, y;
-    mpz_inits(x, y, NULL);
+void test_vdf07_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test() {
+    mpz_t p, t;
+    uint8_t challenge[32] = {0xc8, 0x77, 0x4b, 0xec, 0xa8, 0x35, 0x21, 0x40, 0x89, 0x86, 0x0e, 0x8b, 0x01, 0x15, 0x7c, 0x6c, 0x88, 0x3c, 0x70, 0xf4, 0xa2, 0x5e, 0x83, 0xd1, 0x90, 0xb5, 0x77, 0xf7, 0xf5, 0x6b, 0xcf, 0xd3};
+    uint8_t proof[32], proof2[32], proof3[32], proof4[32], proof5[32];
 
-    mpz_set_ui(x, 0x789acdef);
-    mpz_mul_2exp(x, x, 32);
-    mpz_add_ui(x, x, 0x06543210);
+    mpz_init_set_str(p, "64106875808534963770974826322234655855469213855659218736479077548818158667371", 10);
+    mpz_init_set_ui(t, 200);
 
-    sloth_permutation_write_big_int_to_buffer(sloth, y, x, 8);
-    sloth_permutation_read_big_int_from_buffer(sloth, x, y);
+    sloth_permutation_set_prime(p);
 
-    bool equal = (mpz_cmp(x, y) == 0);
-    gmp_printf("[VDF05] bigint export/import from buffers: %d\n", equal);
+    generate_buffer_proof_vdf(t, challenge, 32, proof);
+    assert(verify_buffer_proof_vdf(t, challenge, proof, 32));
 
-    mpz_clears(x, y, NULL);
-    sloth_permutation_free(sloth);
+    memcpy(challenge, proof, 32);
+    generate_buffer_proof_vdf(t, challenge, 32, proof2);
+    assert(verify_buffer_proof_vdf(t, challenge, proof2, 32));
+
+    memcpy(challenge, proof2, 32);
+    generate_buffer_proof_vdf(t, challenge, 32, proof3);
+    assert(verify_buffer_proof_vdf(t, challenge, proof3, 32));
+
+    memcpy(challenge, proof3, 32);
+    generate_buffer_proof_vdf(t, challenge, 32, proof4);
+    assert(verify_buffer_proof_vdf(t, challenge, proof4, 32));
+
+    memcpy(challenge, proof4, 32);
+    generate_buffer_proof_vdf(t, challenge, 32, proof5);
+    assert(verify_buffer_proof_vdf(t, challenge, proof5, 32));
+
+    assert(memcmp(proof, proof2, 32) != 0);
+    assert(memcmp(proof, proof3, 32) != 0);
+    assert(memcmp(proof, proof4, 32) != 0);
+    assert(memcmp(proof, proof5, 32) != 0);
+    assert(memcmp(proof2, proof3, 32) != 0);
+    assert(memcmp(proof2, proof4, 32) != 0);
+    assert(memcmp(proof2, proof5, 32) != 0);
+    assert(memcmp(proof3, proof4, 32) != 0);
+    assert(memcmp(proof3, proof5, 32) != 0);
+    assert(memcmp(proof4, proof5, 32) != 0);
+
+    mpz_clear(p);
+    mpz_clear(t);
 }
 
-void test_vdf06() {
-    SlothPermutation* sp = sloth_permutation_new();
+void test_vdf08_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_test() {
+    mpz_t p, t;
+    uint8_t challenge[16] = {0x13, 0x70, 0x10, 0x85, 0x18, 0x87, 0x94, 0x66, 0x22, 0x57, 0x41, 0x52, 0x57, 0x12, 0x39, 0x13};
+    uint8_t proof[16];
 
-    mpz_t x, y;
-    mpz_inits(x, y, NULL);
+    mpz_init_set_str(p, "297010851887946822574352571639152315287", 10);
+    mpz_init_set_ui(t, 200);
 
-    mpz_set_ui(x, 0x789acdef);
-    mpz_mul_2exp(x, x, 32);
-    mpz_add_ui(x, x, 0x06543210);
+    sloth_permutation_set_prime(p);
 
-    sloth_permutation_write_big_int_to_buffer(sp, y, x, 8);
-    sloth_permutation_read_big_int_from_buffer(sp, x, y, 8);
+    generate_buffer_proof_vdf(t, challenge, 16, proof);
+    assert(verify_buffer_proof_vdf(t, challenge, proof, 16));
 
-    bool equal = (mpz_cmp(x, y) == 0);
-    gmp_printf("[VDF06] bigint export/import from buffers of arbitrary size = 64: %d\n", equal);
-
-    mpz_clears(x, y, NULL);
-    sloth_permutation_free(sp);
+    mpz_clear(p);
+    mpz_clear(t);
 }
 
-void test_vdf07() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    sloth_permutation_set_prime(sloth, HEX(73237431696005972674723595250817150843));
-    mpz_t x, t, y;
-    mpz_inits(x, t, y, NULL);
+void test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test_many_steps() {
+    mpz_t challenge, p, t, proof;
+    mpz_init_set_str(challenge, "c8774beca835214089860e8b01157c6c883c70f4a25e83d190b577f7f56bcfd3", 16);
+    mpz_init_set_str(p, "64106875808534963770974826322234655855469213855659218736479077548818158667371", 10);
+    mpz_init_set_ui(t, 200);
 
-    mpz_set_str(x, "808080818080808080818080", 16);
-    sloth_permutation_mod_op(sloth, t, x, y);
-    mpz_set_ui(y, 2000);
+    sloth_set_p(p);
 
-    sloth_permutation_generate_proof_vdf(sloth, y, t, x);
-    bool verified = sloth_permutation_verify_proof_vdf(sloth, y, t, x);
-    gmp_printf("[VDF07] generate and verify, medium: %d\n", verified);
+    mpz_init(proof);
 
-    mpz_clears(x, t, y, NULL);
-    sloth_permutation_free(sloth);
+    int buffer_size = 32;
+    uint8_t challenge_buffer[buffer_size];
+    uint8_t proof_buffer[buffer_size];
+
+    mpz_export(challenge_buffer, NULL, 1, sizeof(uint8_t), 0, 0, challenge);
+    generate_proof_vdf_buffer(t, challenge_buffer, proof_buffer, buffer_size);
+    assert(verify_proof_vdf_buffer(t, challenge_buffer, proof_buffer, buffer_size));
+
+    mpz_clear(challenge);
+    mpz_clear(p);
+    mpz_clear(t);
+    mpz_clear(proof);
+
+    printf("Test case VDF09 passed.\n");
 }
 
-void test_vdf08() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    mpz_t x, y, t;
-    mpz_inits(x, y, t, NULL);
 
-    // Choose a prime p and a number x less than p
-    sloth_permutation_set_prime(sloth, "73237431696005972674723595250817150843");
-    mpz_set_str(x, "808080818080808080818080", 16);
-    sloth_permutation_mod(sloth, x, x, sloth->p);
+int main() {
+    printf("Running VDF01 test...\n");
+    test_vdf01_generate_and_verify_small();
+    printf("VDF01 test passed.\n");
+    
+    printf("Running VDF02 test...\n");
+    test_vdf02_generate_and_verify_medium();
+    printf("VDF02 test passed.\n");
+    
+    printf("Running VDF03 test...\n");
+    test_vdf03_bigint_export_import_from_buffers();
+    printf("VDF03 test passed.\n");
 
-    // Calculate y = x^2 mod p using sloth_permutation_mod_op
-    sloth_permutation_mod_op(sloth, y, x, x);
+    printf("Running VDF04 test...\n");
+    test_vdf04_bigint_export_import_from_buffers_arbitrary_size_64();
+    printf("VDF04 test passed.\n");
 
-    // Verify that y is a quadratic residue modulo p
-    bool is_residue = sloth_permutation_quad_res(sloth, y);
-    gmp_printf("[VDF08] verify quadratic residue: %d\n", is_residue);
+    printf("Running VDF05 test...\n");
+    test_vdf05_bigint_export_import_from_buffers_arbitrary_size_128();
+    printf("VDF05 test passed.\n");
 
-    // Verify that y is the correct square root of x^2 mod p using sloth_permutation_sqrt_mod_p_verify
-    bool verified = sloth_permutation_sqrt_mod_p_verify(sloth, t, y, sloth->p);
-    gmp_printf("[VDF08] verify square root: %d\n", verified);
+    printf("Running VDF06 test...\n");
+    test_vdf06_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_test();
+    printf("VDF06 test passed.\n");
 
-    sloth_permutation_free(sloth);
-    mpz_clears(x, y, t, NULL);
-}
+    printf("Running VDF07 test...\n");
+    test_vdf07_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test();
+    printf("VDF07 test passed.\n");
 
-void test_vdf09() {
-    SlothPermutation* sloth = sloth_permutation_new();
-    sloth_permutation_set_prime(sloth, HEX(73237431696005972674723595250817150843));
+    printf("Running VDF08 test...\n");
+    test_vdf08_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_test();
+    printf("VDF08 test passed.\n");
 
-    mpz_t x, t, y;
-    mpz_inits(x, t, y, NULL);
-
-    mpz_set_str(x, "808080818080808080818080", 16);
-    sloth_permutation_mod_op(sloth, x, x, sloth->p);
-    mpz_set_ui(t, 2000);
-
-    sloth_permutation_mod_sqrt_op(sloth, y, x);
-    sloth_permutation_mod_op(sloth, y, y, t);
-
-    bool verified = sloth_permutation_mod_verif(sloth, t, x, y);
-    gmp_printf("[VDF09] verify, small: %d\n", verified);
-
-    sloth_permutation_free(sloth);
-    mpz_clears(x, t, y, NULL);
+    printf("Running VDF09 test...\n");
+    test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test_many_steps();
+    printf("VDF09 test passed.\n");
+    
+    printf("All tests passed.\n");
+    return 0;
 }
