@@ -6,7 +6,7 @@
 
 #include <gmp.h>
 
-#include "../src/model/sloth_permutation.h"
+#include "sloth_permutation.h"
 
 #define HEX(x) #x
 
