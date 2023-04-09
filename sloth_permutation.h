@@ -23,4 +23,6 @@ void sloth_permutation_mod_sqrt_op(SlothPermutation* sp, mpz_t result, mpz_t x);
 void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t t);
 bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t);
 
+SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset);
+
 #endif // SLOTH_PERMUTATION_H
