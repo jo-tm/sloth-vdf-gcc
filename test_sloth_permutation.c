@@ -152,3 +152,9 @@ int main() {
     test_VDF02();
     test_VDF03();
     test_VDF04();
+    test_VDF05();
+    test_VDF06();
+    test_VDF07();
+    test_VDF08();
+    test_VDF09();
+}
