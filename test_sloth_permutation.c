@@ -1,7 +1,12 @@
+#include <assert.h>
+#include <gmp.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
+#include <string.h>
 #include "sloth_permutation.h"
+
+
 
 void test_vdf01_generate_and_verify_small() {
     SlothPermutation* sp = sloth_permutation_new();
