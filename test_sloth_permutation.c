@@ -30,27 +30,28 @@ void test_vdf01_generate_and_verify_small() {
     sloth_permutation_free(sp);
 }
 
-/*
 void test_vdf02_generate_and_verify_medium() {
-    mpz_t x, p, t, y;
+    SlothPermutation* sp = sloth_permutation_new();
+    mpz_t x, t, y;
     bool verified;
 
     mpz_init_set_str(x, "808080818080808080818080", 10);
-    mpz_init_set_str(p, "73237431696005972674723595250817150843", 10);
+    mpz_init_set_str(SlothPermutation.p, "73237431696005972674723595250817150843", 10);
     mpz_init_set_ui(t, 2000);
     mpz_init(y);
 
-    mpz_mod(x, x, p);
+    mpz_mod(x, x, SlothPermutation.p);
 
-    sloth_generate_proof_vdf(t, x, p, y);
-    verified = sloth_verify_proof_vdf(t, x, p, y);
+    sloth_generate_proof_vdf(sp, t, x, y);
+    verified = sloth_verify_proof_vdf(sp, y, x, t);
 
     assert(verified);
 
     mpz_clear(x);
-    mpz_clear(p);
     mpz_clear(t);
     mpz_clear(y);
+
+    sloth_permutation_free(sp);
 }
 
 void test_vdf03_bigint_export_import_from_buffers() {
@@ -65,6 +66,7 @@ void test_vdf03_bigint_export_import_from_buffers() {
 }
 
 void test_vdf04_bigint_export_import_from_buffers_arbitrary_size_64() {
+    SlothPermutation *sp = sloth_permutation_new();
     uint64_t x = ((uint64_t)0x789acdef << 32) + (uint64_t)0x06543210;
     uint64_t y;
     uint8_t buffer[8];
@@ -73,9 +75,12 @@ void test_vdf04_bigint_export_import_from_buffers_arbitrary_size_64() {
     y = read_biguint_le(buffer, 8);
 
     assert(x == y);
+
+    sloth_permutation_free(sp);
 }
 
 void test_vdf05_bigint_export_import_from_buffers_arbitrary_size_128() {
+    SlothPermutation *sp = sloth_permutation_new();
     mpz_t x, y;
     uint8_t buffer[16];
 
@@ -93,36 +98,38 @@ void test_vdf05_bigint_export_import_from_buffers_arbitrary_size_128() {
 
     mpz_clear(x);
     mpz_clear(y);
+
+    sloth_permutation_free(sp);
 }
 
 void test_vdf06_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_test() {
-    mpz_t p, t;
+    SlothPermutation* sp = sloth_permutation_new();
     uint8_t challenge[16] = {0x13, 0x70, 0x10, 0x85, 0x18, 0x87, 0x94, 0x66, 0x22, 0x57, 0x41, 0x52, 0x57, 0x12, 0x39, 0x13};
     uint8_t proof[16], proof2[16], proof3[16], proof4[16], proof5[16];
 
-    mpz_init_set_str(p, "297010851887946822574352571639152315287", 10);
-    mpz_init_set_ui(t, 200);
+    mpz_init_set_str(sp->p, "297010851887946822574352571639152315287", 10);
+    mpz_init_set_ui(sp->t, 200);
 
-    sloth_permutation_set_prime(p);
+    sloth_permutation_set_prime(sp->p);
 
-    generate_buffer_proof_vdf(t, challenge, 16, proof);
-    assert(verify_buffer_proof_vdf(t, challenge, proof, 16));
+    generate_buffer_proof_vdf(sp->t, challenge, 16, proof);
+    assert(verify_buffer_proof_vdf(sp->t, challenge, proof, 16));
 
     memcpy(challenge, proof, 16);
-    generate_buffer_proof_vdf(t, challenge, 16, proof2);
-    assert(verify_buffer_proof_vdf(t, challenge, proof2, 16));
+    generate_buffer_proof_vdf(sp->t, challenge, 16, proof2);
+    assert(verify_buffer_proof_vdf(sp->t, challenge, proof2, 16));
 
     memcpy(challenge, proof2, 16);
-    generate_buffer_proof_vdf(t, challenge, 16, proof3);
-    assert(verify_buffer_proof_vdf(t, challenge, proof3, 16));
+    generate_buffer_proof_vdf(sp->t, challenge, 16, proof3);
+    assert(verify_buffer_proof_vdf(sp->t, challenge, proof3, 16));
 
     memcpy(challenge, proof3, 16);
-    generate_buffer_proof_vdf(t, challenge, 16, proof4);
-    assert(verify_buffer_proof_vdf(t, challenge, proof4, 16));
+    generate_buffer_proof_vdf(sp->t, challenge, 16, proof4);
+    assert(verify_buffer_proof_vdf(sp->t, challenge, proof4, 16));
 
     memcpy(challenge, proof4, 16);
-    generate_buffer_proof_vdf(t, challenge, 16, proof5);
-    assert(verify_buffer_proof_vdf(t, challenge, proof5, 16));
+    generate_buffer_proof_vdf(sp->t, challenge, 16, proof5);
+    assert(verify_buffer_proof_vdf(sp->t, challenge, proof5, 16));
 
     assert(memcmp(proof, proof2, 16) != 0);
     assert(memcmp(proof, proof3, 16) != 0);
@@ -135,8 +142,7 @@ void test_vdf06_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_tes
     assert(memcmp(proof3, proof5, 16) != 0);
     assert(memcmp(proof4, proof5, 16) != 0);
 
-    mpz_clear(p);
-    mpz_clear(t);
+    sloth_permutation_free(sp);
 }
 
 void test_vdf07_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test() {
@@ -147,26 +153,27 @@ void test_vdf07_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_tes
     mpz_init_set_str(p, "64106875808534963770974826322234655855469213855659218736479077548818158667371", 10);
     mpz_init_set_ui(t, 200);
 
-    sloth_permutation_set_prime(p);
+    SlothPermutation* sp = sloth_permutation_new(p);
+    sloth_permutation_set_prime(sp, p);
 
     generate_buffer_proof_vdf(t, challenge, 32, proof);
-    assert(verify_buffer_proof_vdf(t, challenge, proof, 32));
+    assert(verify_buffer_proof_vdf(sp, t, challenge, proof, 32));
 
     memcpy(challenge, proof, 32);
     generate_buffer_proof_vdf(t, challenge, 32, proof2);
-    assert(verify_buffer_proof_vdf(t, challenge, proof2, 32));
+    assert(verify_buffer_proof_vdf(sp, t, challenge, proof2, 32));
 
     memcpy(challenge, proof2, 32);
     generate_buffer_proof_vdf(t, challenge, 32, proof3);
-    assert(verify_buffer_proof_vdf(t, challenge, proof3, 32));
+    assert(verify_buffer_proof_vdf(sp, t, challenge, proof3, 32));
 
     memcpy(challenge, proof3, 32);
     generate_buffer_proof_vdf(t, challenge, 32, proof4);
-    assert(verify_buffer_proof_vdf(t, challenge, proof4, 32));
+    assert(verify_buffer_proof_vdf(sp, t, challenge, proof4, 32));
 
     memcpy(challenge, proof4, 32);
     generate_buffer_proof_vdf(t, challenge, 32, proof5);
-    assert(verify_buffer_proof_vdf(t, challenge, proof5, 32));
+    assert(verify_buffer_proof_vdf(sp, t, challenge, proof5, 32));
 
     assert(memcmp(proof, proof2, 32) != 0);
     assert(memcmp(proof, proof3, 32) != 0);
@@ -179,25 +186,35 @@ void test_vdf07_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_tes
     assert(memcmp(proof3, proof5, 32) != 0);
     assert(memcmp(proof4, proof5, 32) != 0);
 
+    sloth_permutation_free(sp);
     mpz_clear(p);
     mpz_clear(t);
 }
 
-void test_vdf08_bigint_export_import_from_buffers_arbitrary_size_128_and_vdf_test() {
-    mpz_t p, t;
-    uint8_t challenge[16] = {0x13, 0x70, 0x10, 0x85, 0x18, 0x87, 0x94, 0x66, 0x22, 0x57, 0x41, 0x52, 0x57, 0x12, 0x39, 0x13};
-    uint8_t proof[16];
+void test_vdf08_generate_and_verify_large() {
+    mpz_t x, p, t, y;
+    bool verified;
 
-    mpz_init_set_str(p, "297010851887946822574352571639152315287", 10);
-    mpz_init_set_ui(t, 200);
+    mpz_init_set_str(x, "1234567890987654321012345678909876543210123456789098765432101234567890987654321", 10);
+    mpz_init_set_str(p, "32317006071311007300714876688669951960444102669715484032130345427524655138867", 10);
+    mpz_init_set_ui(t, 100000);
 
-    sloth_permutation_set_prime(p);
+    sloth_permutation* sp = sloth_permutation_new();
+    sloth_permutation_set_prime(sp, p);
 
-    generate_buffer_proof_vdf(t, challenge, 16, proof);
-    assert(verify_buffer_proof_vdf(t, challenge, proof, 16));
+    mpz_mod(x, x, p);
 
+    sloth_generate_proof_vdf(sp, t, x, y);
+    verified = sloth_verify_proof_vdf(sp, t, x, y);
+
+    assert(verified);
+
+    sloth_permutation_free(sp);
+
+    mpz_clear(x);
     mpz_clear(p);
     mpz_clear(t);
+    mpz_clear(y);
 }
 
 void test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test_many_steps() {
@@ -206,7 +223,7 @@ void test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_tes
     mpz_init_set_str(p, "64106875808534963770974826322234655855469213855659218736479077548818158667371", 10);
     mpz_init_set_ui(t, 200);
 
-    sloth_set_p(p);
+    sloth_permutation_set_prime(p);
 
     mpz_init(proof);
 
@@ -225,13 +242,13 @@ void test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_tes
 
     printf("Test case VDF09 passed.\n");
 }
-*/
+
 
 int main() {
     printf("Running VDF01 test...\n");
     test_vdf01_generate_and_verify_small();
     printf("VDF01 test passed.\n");
-    /*
+    
     printf("Running VDF02 test...\n");
     test_vdf02_generate_and_verify_medium();
     printf("VDF02 test passed.\n");
@@ -263,7 +280,7 @@ int main() {
     printf("Running VDF09 test...\n");
     test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_test_many_steps();
     printf("VDF09 test passed.\n");
-    */
+    
     printf("All tests passed.\n");
     return 0;
 }
