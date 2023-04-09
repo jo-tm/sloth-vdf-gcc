@@ -229,7 +229,7 @@ void test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_tes
 
 int main() {
     printf("Running VDF01 test...\n");
-    test_vdf_01();
+    test_vdf01_generate_and_verify_small();
     printf("VDF01 test passed.\n");
     /*
     printf("Running VDF02 test...\n");
