@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <gmp.h>
 
-typedef struct SlothPermutation SlothPermutation;
+typedef struct SlothPermutation_s SlothPermutation;
 
 SlothPermutation* sloth_permutation_new(void);
 void sloth_permutation_free(SlothPermutation* sp);
