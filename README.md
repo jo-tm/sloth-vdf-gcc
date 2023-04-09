@@ -7,6 +7,7 @@ Compile and build the project using CMake. Open a terminal in the project folder
 
 ```sh
 sudo apt-get install -y cmake build-essential
+sudo apt-get install libgmp-dev
 mkdir build
 cd build
 cmake ..
@@ -17,6 +18,7 @@ For macOS:
 
 ```sh
 brew install cmake
+brew install libgmp-dev
 mkdir build
 cd build
 cmake ..
