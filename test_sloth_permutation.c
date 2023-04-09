@@ -6,35 +6,37 @@
 #include <string.h>
 #include "sloth_permutation.h"
 
-void test_vdf01() {
-    // Initialize SlothPermutation
-    SlothPermutation sp;
-    sloth_permutation_init(&sp);
+#include <stdio.h>
+#include <gmp.h>
+#include "sloth_permutation.h"
 
-    // Set values for test
-    mpz_t x, t, y;
-    mpz_inits(x, t, y, NULL);
-    mpz_set_ui(x, 10);
-    mpz_set_ui(t, 50);
-    mpz_set_ui(sp.p, 23);
-    mpz_mod(x, x, sp.p);
+int main() {
+    SlothPermutation* sp = sloth_permutation_new();
 
-    // Generate proof
-    sloth_generate_proof_vdf(&sp, y, x, t);
+    mpz_t p, t, x, y;
+    mpz_init_set_ui(p, 23);
+    mpz_init_set_ui(t, 50);
+    mpz_init_set_ui(x, 10);
+    mpz_init(y);
 
-    // Verify proof
-    bool verified = sloth_verify_proof_vdf(&sp, y, x, t);
+    mpz_mod(x, x, p);
 
-    // Check if verified
-    if (verified) {
-        printf("VDF01 test passed.\n");
-    } else {
-        printf("VDF01 test failed.\n");
-    }
+    sloth_generate_proof_vdf(sp, y, x, t);
 
-    // Free memory
-    mpz_clears(x, t, y, NULL);
-    sloth_permutation_clear(&sp);
+    printf("Generated proof: ");
+    mpz_out_str(stdout, 10, y);
+    printf("\n");
+
+    bool is_valid = sloth_verify_proof_vdf(sp, y, x, t);
+    printf("Verification result: %s\n", is_valid ? "True" : "False");
+
+    mpz_clear(p);
+    mpz_clear(t);
+    mpz_clear(x);
+    mpz_clear(y);
+    sloth_permutation_free(sp);
+
+    return 0;
 }
 
 /*
