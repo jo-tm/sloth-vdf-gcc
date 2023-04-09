@@ -36,11 +36,11 @@ void test_vdf02_generate_and_verify_medium() {
     bool verified;
 
     mpz_init_set_str(x, "808080818080808080818080", 10);
-    mpz_init_set_str(SlothPermutation.p, "73237431696005972674723595250817150843", 10);
+    mpz_init_set_str(sp->p, "73237431696005972674723595250817150843", 10);
     mpz_init_set_ui(t, 2000);
     mpz_init(y);
 
-    mpz_mod(x, x, SlothPermutation.p);
+    mpz_mod(x, x, sp->p);
 
     sloth_generate_proof_vdf(sp, t, x, y);
     verified = sloth_verify_proof_vdf(sp, y, x, t);
