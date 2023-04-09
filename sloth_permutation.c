@@ -1,10 +1,6 @@
 #include "sloth_permutation.h"
 #include <stdlib.h>
 
-struct SlothPermutation {
-    mpz_t p;
-};
-
 SlothPermutation* sloth_permutation_new(void) {
     SlothPermutation* sp = malloc(sizeof(SlothPermutation));
     if (!sp) {
