@@ -16,7 +16,7 @@ int main() {
     mpz_out_str(stdout, 10, y);
     printf("\n");
 
-    bool is_valid = sloth_permutation_mod_verif(sp, y, x, t);
+    bool is_valid = sloth_verify_proof_vdf(sp, y, x, t);
     printf("Verification result: %s\n", is_valid ? "True" : "False");
 
     mpz_clear(t);
