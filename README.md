@@ -1,4 +1,4 @@
-# slothvdf-gcc
+# sloth-vdf-gcc
 Sloth Pseudo-VDF high-performance version in C.
 
 ## Building
