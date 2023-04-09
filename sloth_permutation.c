@@ -79,7 +79,7 @@ void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t
     mpz_set(result, x);
 }
 
-bool sloth_permutation_mod_verif(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
+bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
     mpz_mod(x, x, sp->p);
     for (mpz_t i; mpz_cmp(i, t) < 0; mpz_add_ui(i, i, 1)) {
         mpz_powm_ui(y, y, 2, sp->p);
