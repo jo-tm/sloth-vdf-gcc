@@ -1,37 +1,25 @@
-#include <assert.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include "sloth_permutation.h"
-
 #include <stdio.h>
-#include <gmp.h>
+#include <stdlib.h>
+#include <assert.h>
 #include "sloth_permutation.h"
 
-void test_vdf01_generate_and_verify_small() {
-    SlothPermutation* sp = sloth_permutation_new();
-
-    mpz_t p, t, x, y;
-    mpz_init_set_ui(p, 23);
-    mpz_init_set_ui(t, 50);
+void test_vdf_01()
+{
+    SlothPermutation *sp = sloth_permutation_new();
+    mpz_t x, t, y;
     mpz_init_set_ui(x, 10);
-    mpz_init(y);
+    mpz_init_set_ui(t, 50);
 
-    mpz_mod(x, x, p);
+    SlothPermutation_set_p(sp, "23");
 
+    mpz_mod(x, x, sp->p);
     sloth_generate_proof_vdf(sp, y, x, t);
+    int verified = sloth_verify_proof_vdf(sp, y, x, t);
 
-    printf("Generated proof: ");
-    mpz_out_str(stdout, 10, y);
-    printf("\n");
+    assert(verified == 1);
 
-    bool is_valid = sloth_verify_proof_vdf(sp, y, x, t);
-    printf("Verification result: %s\n", is_valid ? "True" : "False");
-    assert(is_valid);
-
-    mpz_clear(p);
-    mpz_clear(t);
     mpz_clear(x);
+    mpz_clear(t);
     mpz_clear(y);
     sloth_permutation_free(sp);
 }
@@ -235,7 +223,7 @@ void test_vdf09_bigint_export_import_from_buffers_arbitrary_size_256_and_vdf_tes
 
 int main() {
     printf("Running VDF01 test...\n");
-    test_vdf01_generate_and_verify_small();
+    test_vdf_01();
     printf("VDF01 test passed.\n");
     /*
     printf("Running VDF02 test...\n");
