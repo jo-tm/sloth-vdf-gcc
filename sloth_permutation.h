@@ -9,6 +9,7 @@ typedef struct SlothPermutation SlothPermutation;
 SlothPermutation* sloth_permutation_new(void);
 void sloth_permutation_free(SlothPermutation* sp);
 
+void sloth_permutation_set_prime(SlothPermutation* sp, const char* prime_str);
 bool sloth_permutation_sqrt_mod_p_verify(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t p);
 void sloth_permutation_mod(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t y);
 void sloth_permutation_fast_pow(SlothPermutation* sp, mpz_t result, mpz_t base, mpz_t exponent, mpz_t modulus);
