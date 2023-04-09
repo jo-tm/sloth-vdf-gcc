@@ -20,4 +20,75 @@ void sloth_permutation_free(SlothPermutation* sp) {
     }
 }
 
-// Add the rest of the functions from sloth_permutation.h here, translating the TypeScript code into C.
+bool sloth_permutation_sqrt_mod_p_verify(SlothPermutation* sp, int64_t y, int64_t x, int64_t p) {
+    int64_t temp = (y * y) % p;
+    if (temp != (x % p)) {
+        return false;
+    } else {
+        return true;
+    }
+}
+
+int64_t sloth_permutation_mod(SlothPermutation* sp, int64_t x, int64_t y) {
+    return (x - (x / y * y));
+}
+
+int64_t sloth_permutation_fast_pow(SlothPermutation* sp, int64_t base, int64_t exponent, int64_t modulus) {
+    if (modulus == 1) return 0;
+    int64_t result = 1;
+    base = base % modulus;
+    while (exponent > 0) {
+        if (exponent % 2 == 1) {
+            result = (result * base) % modulus;
+        }
+        exponent = exponent / 2;
+        base = (base * base) % modulus;
+    }
+    return result;
+}
+
+bool sloth_permutation_quad_res(SlothPermutation* sp, int64_t x) {
+    return sloth_permutation_fast_pow(sp, x, (sp->p - 1) / 2, sp->p) == 1;
+}
+
+int64_t sloth_permutation_mod_sqrt_op(SlothPermutation* sp, int64_t x) {
+    int64_t y;
+    if (sloth_permutation_quad_res(sp, x)) {
+        y = sloth_permutation_fast_pow(sp, x, (sp->p + 1) / 4, sp->p);
+    } else {
+        x = (sp->p - x) % sp->p;
+        y = sloth_permutation_fast_pow(sp, x, (sp->p + 1) / 4, sp->p);
+    }
+    return y;
+}
+
+int64_t sloth_permutation_mod_op(SlothPermutation* sp, int64_t x, int64_t t) {
+    x = x % sp->p;
+    for (int64_t i = 0; i < t; i++) {
+        x = sloth_permutation_mod_sqrt_op(sp, x);
+    }
+    return x;
+}
+
+bool sloth_permutation_mod_verif(SlothPermutation* sp, int64_t y, int64_t x, int64_t t) {
+    x = x % sp->p
+    for (int64_t i = 0; i < t; i++) {
+        y = (y * y) % sp->p;
+    }
+    if (!sloth_permutation_quad_res(sp, y)) {
+        y = (sp->p - y) % sp->p;
+    }
+    if ((x % sp->p) == y || ((sp->p - x) % sp->p) == y) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+int64_t sloth_permutation_generateProofVDF(SlothPermutation* sp, int64_t t, int64_t x) {
+    return sloth_permutation_mod_op(sp, x, t);
+}
+
+bool sloth_permutation_verifyProofVDF(SlothPermutation* sp, int64_t t, int64_t x, int64_t y) {
+    return sloth_permutation_mod_verif(sp, y, x, t);
+}
