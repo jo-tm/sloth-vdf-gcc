@@ -4,6 +4,10 @@
 #include <stdbool.h>
 #include <gmp.h>
 
+struct SlothPermutation {
+    mpz_t p;
+};
+
 typedef struct SlothPermutation SlothPermutation;
 
 SlothPermutation* sloth_permutation_new(void);
