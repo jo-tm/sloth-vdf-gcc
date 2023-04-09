@@ -122,3 +122,28 @@ SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset) {
     return sp;
 }
 
+void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t offset) {
+    uint8_t first = buffer[offset];
+    uint8_t last = buffer[offset + 7];
+    if (first == '\0' || last == '\0') {
+        printf("Out of bounds\n");
+        exit(1);
+    }
+
+    mpz_t y, big256, big8, temp;
+    mpz_inits(y, big256, big8, temp, NULL);
+
+    mpz_set(y, x);
+    mpz_set_ui(big256, 256);
+    mpz_set_ui(big8, 8);
+
+    for (int i = 0; i < 8; i++) {
+        mpz_mod(temp, y, big256);
+        buffer[offset + i] = mpz_get_ui(temp);
+        mpz_fdiv_q(y, y, big256);
+    }
+
+    mpz_clears(y, big256, big8, temp, NULL);
+}
+
+
