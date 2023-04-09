@@ -10,7 +10,7 @@ int main() {
     mpz_init_set_str(x, "12345678901234567890", 10);
     mpz_init(y);
 
-    sloth_permutation_mod_op(sp, y, x, t);
+    sloth_generate_proof_vdf(sp, y, x, t);
 
     printf("Generated proof: ");
     mpz_out_str(stdout, 10, y);
