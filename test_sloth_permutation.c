@@ -3,20 +3,21 @@
 #include <assert.h>
 #include "sloth_permutation.h"
 
-void test_vdf_01()
-{
-    SlothPermutation *sp = sloth_permutation_new();
+void test_vdf01_generate_and_verify_small() {
+    SlothPermutation* sp = sloth_permutation_new();
     mpz_t x, t, y;
+    bool verified;
+
     mpz_init_set_ui(x, 10);
     mpz_init_set_ui(t, 50);
-
-    SlothPermutation_set_p(sp, "23");
+    mpz_init(y);
 
     mpz_mod(x, x, sp->p);
-    sloth_generate_proof_vdf(sp, y, x, t);
-    int verified = sloth_verify_proof_vdf(sp, y, x, t);
 
-    assert(verified == 1);
+    sloth_generate_proof_vdf(sp, y, x, t);
+    verified = sloth_verify_proof_vdf(sp, y, x, t);
+
+    assert(verified);
 
     mpz_clear(x);
     mpz_clear(t);
