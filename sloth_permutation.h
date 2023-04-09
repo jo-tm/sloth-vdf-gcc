@@ -25,5 +25,6 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t);
 
 SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset);
 void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t offset);
+SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset);
 
 #endif // SLOTH_PERMUTATION_H
