@@ -74,15 +74,19 @@ void test_vdf03_bigint_export_import_from_buffers() {
 
 void test_vdf04_bigint_export_import_from_buffers_arbitrary_size_64() {
     SlothPermutation *sp = sloth_permutation_new();
-    uint64_t x = ((uint64_t)0x789acdef << 32) + (uint64_t)0x06543210;
-    uint64_t y;
+    mpz_t x, y;
     uint8_t buffer[8];
 
-    write_biguint_le(x, buffer, 8);
-    y = read_biguint_le(buffer, 8);
+    mpz_init_set_ui(x, ((uint64_t)0x789acdef << 32) + (uint64_t)0x06543210);
+    mpz_init(y);
 
-    assert(x == y);
+    write_biguint_le_mpz(x, buffer, 8);
+    read_biguint_le_mpz(buffer, 8, y);
 
+    assert(mpz_cmp(x, y) == 0);
+
+    mpz_clear(x);
+    mpz_clear(y);
     sloth_permutation_free(sp);
 }
 
