@@ -71,7 +71,7 @@ int64_t sloth_permutation_mod_op(SlothPermutation* sp, int64_t x, int64_t t) {
 }
 
 bool sloth_permutation_mod_verif(SlothPermutation* sp, int64_t y, int64_t x, int64_t t) {
-    x = x % sp->p
+    x = x % sp->p;
     for (int64_t i = 0; i < t; i++) {
         y = (y * y) % sp->p;
     }
