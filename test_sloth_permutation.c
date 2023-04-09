@@ -10,7 +10,7 @@
 #include <gmp.h>
 #include "sloth_permutation.h"
 
-int main() {
+void test_vdf01_generate_and_verify_small() {
     SlothPermutation* sp = sloth_permutation_new();
 
     mpz_t p, t, x, y;
