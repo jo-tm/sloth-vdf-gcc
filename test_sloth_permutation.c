@@ -35,8 +35,6 @@ void test_vdf01_generate_and_verify_small() {
     mpz_clear(x);
     mpz_clear(y);
     sloth_permutation_free(sp);
-
-    return 0;
 }
 
 /*
