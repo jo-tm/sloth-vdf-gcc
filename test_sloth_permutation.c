@@ -55,14 +55,21 @@ void test_vdf02_generate_and_verify_medium() {
 }
 
 void test_vdf03_bigint_export_import_from_buffers() {
-    uint64_t x = ((uint64_t)0x789acdef << 32) + (uint64_t)0x06543210;
-    uint64_t y;
-    uint8_t buffer[8];
+    mpz_t x, y;
+    uint8_t buffer[16];
 
-    write_uint64_le(x, buffer);
-    y = read_uint64_le(buffer);
+    mpz_init_set_ui(x, 0x789acdef);
+    mpz_mul_2exp(x, x, 32);
+    mpz_add_ui(x, x, 0x06543210);
+    mpz_init(y);
 
-    assert(x == y);
+    write_biguint_le_mpz(x, buffer, 8);
+    read_biguint_le_mpz(buffer, 8, y);
+
+    assert(mpz_cmp(x, y) == 0);
+
+    mpz_clear(x);
+    mpz_clear(y);
 }
 
 void test_vdf04_bigint_export_import_from_buffers_arbitrary_size_64() {
