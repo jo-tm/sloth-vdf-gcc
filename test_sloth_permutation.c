@@ -1,7 +1,5 @@
 #include <assert.h>
-#include <gmp.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "sloth_permutation.h"
@@ -29,6 +27,7 @@ void test_vdf01_generate_and_verify_small() {
 
     bool is_valid = sloth_verify_proof_vdf(sp, y, x, t);
     printf("Verification result: %s\n", is_valid ? "True" : "False");
+    assert(is_valid);
 
     mpz_clear(p);
     mpz_clear(t);
