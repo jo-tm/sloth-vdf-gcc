@@ -87,3 +87,38 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
     bool result = mpz_cmp(x, y) == 0 || mpz_cmp(x, y) == mpz_cmp(sp->p, y);
     return result;
 }
+
+// I/O
+
+#include <stdint.h>
+#include <stdlib.h>
+
+SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset) {
+    uint8_t first = buffer[offset];
+    uint8_t last = buffer[offset + 7];
+    if (first == NULL || last == NULL) {
+        perror("Out of bounds");
+        return NULL;
+    }
+    uint64_t lo = (uint64_t)first +
+            ((uint64_t)buffer[++offset] << 8) +
+            ((uint64_t)buffer[++offset] << 16) +
+            ((uint64_t)buffer[++offset] << 24);
+
+    uint64_t hi = (uint64_t)buffer[++offset] +
+            ((uint64_t)buffer[++offset] << 8) +
+            ((uint64_t)buffer[++offset] << 16) +
+            ((uint64_t)last << 24);
+
+    mpz_t result;
+    mpz_init(result);
+    mpz_set_ui(result, lo);
+    mpz_addmul_ui(result, result, (uint64_t)1 << 32);
+    mpz_add_ui(result, result, hi);
+
+    SlothPermutation* sp = sloth_permutation_new();
+    sloth_permutation_set_from_bigint(sp, result);
+
+    return sp;
+}
+
