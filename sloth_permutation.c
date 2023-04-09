@@ -15,7 +15,7 @@ SlothPermutation* sloth_permutation_new(void) {
 }
 
 void sloth_permutation_set_prime(SlothPermutation* sp, const char* prime_str) {
-    mpz_init_set_str(sp->p, primer_str, 10);
+    mpz_init_set_str(sp->p, prime_str, 10);
 }
 
 void sloth_permutation_free(SlothPermutation* sp) {
