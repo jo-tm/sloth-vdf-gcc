@@ -63,7 +63,7 @@ void test_vdf03_bigint_export_import_from_buffers() {
     mpz_add_ui(x, x, 0x06543210);
     mpz_init(y);
 
-    write_biguint_le_mpz(x, buffer, 8);
+    write_biguint_le(x, buffer, 8);
     read_biguint_le_mpz(buffer, 8, y);
 
     assert(mpz_cmp(x, y) == 0);
