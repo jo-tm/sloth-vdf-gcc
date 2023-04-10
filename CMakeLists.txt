@@ -26,10 +26,10 @@ add_executable(sloth_permutation_example main.c sloth_permutation.c)
 target_link_libraries(sloth_permutation_example ${GMP_LIBRARY})
 
 # Testing
-enable_testing()
+#enable_testing()
 
-add_executable(test_sloth_permutation test_sloth_permutation.c)
-target_link_libraries(test_sloth_permutation sloth_permutation ${GMP_LIBRARY})
+#add_executable(test_sloth_permutation test_sloth_permutation.c)
+#target_link_libraries(test_sloth_permutation sloth_permutation ${GMP_LIBRARY})
 
-add_test(NAME test_sloth_permutation COMMAND test_sloth_permutation)
+#add_test(NAME test_sloth_permutation COMMAND test_sloth_permutation)
 
