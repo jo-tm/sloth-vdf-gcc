@@ -28,5 +28,6 @@ SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset);
 void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t offset);
 SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset);
 void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_len, int offset); 
+void sloth_permutation_set_from_bigint(SlothPermutation* sp, mpz_t p);
 
 #endif // SLOTH_PERMUTATION_H
