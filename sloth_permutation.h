@@ -23,8 +23,6 @@ void sloth_permutation_mod_sqrt_op(SlothPermutation* sp, mpz_t result, mpz_t x);
 void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, size_t t);
 bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t);
 
-uint64_t readBigUInt64LE(const uint8_t* buffer, size_t offset);
-void writeBigUInt64LE(uint64_t x, uint8_t* buffer, size_t offset);
 void readBigUIntLE(mpz_t result, const uint8_t* buffer, size_t byteLen, size_t offset);
 void writeBigUIntLE(mpz_t x, uint8_t* buffer, size_t byteLen, size_t offset);
 
