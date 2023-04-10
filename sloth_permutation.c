@@ -67,17 +67,17 @@ void sloth_permutation_mod_sqrt_op(SlothPermutation* sp, mpz_t result, mpz_t x) 
     mpz_clear(temp);
 }
 
-void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t t) {
+void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, size_t t) {
     mpz_mod(x, x, sp->p);
-    for (mpz_t i; mpz_cmp(i, t) < 0; mpz_add_ui(i, i, 1)) {
+    for (size_t i = 0; i < t; i++) {
         sloth_permutation_mod_sqrt_op(sp, x, x);
     }
     mpz_set(result, x);
 }
 
-bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
+bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t) {
     mpz_mod(x, x, sp->p);
-    for (mpz_t i; mpz_cmp(i, t) < 0; mpz_add_ui(i, i, 1)) {
+    for (size_t i = 0; i < t; i++) {
         mpz_powm_ui(y, y, 2, sp->p);
     }
     if (!sloth_permutation_quad_res(sp, y)) {
