@@ -88,27 +88,6 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t) {
     return result;
 }
 
-uint64_t readBigUInt64LE(const uint8_t* buffer, size_t offset) {
-    uint64_t lo = buffer[offset] +
-                  buffer[++offset] * (uint64_t) 0x100 +
-                  buffer[++offset] * (uint64_t) 0x10000 +
-                  buffer[++offset] * (uint64_t) 0x1000000;
-
-    uint64_t hi = buffer[++offset] +
-                  buffer[++offset] * (uint64_t) 0x100 +
-                  buffer[++offset] * (uint64_t) 0x10000 +
-                  buffer[++offset] * (uint64_t) 0x1000000;
-
-    return lo + (hi << 32);
-}
-
-void writeBigUInt64LE(uint64_t x, uint8_t* buffer, size_t offset) {
-    for (size_t i = 0; i < 8; i++) {
-        buffer[offset + i] = (uint8_t) (x & 0xFF);
-        x >>= 8;
-    }
-}
-
 void readBigUIntLE(mpz_t result, const uint8_t* buffer, size_t byteLen, size_t offset) {
     mpz_set_ui(result, 0);
 
