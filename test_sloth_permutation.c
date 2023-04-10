@@ -78,11 +78,53 @@ void test_vdf05() {
 }
 
 void test_vdf06() {
-    // Implement test case VDF06 here
+    SlothPermutation sp;
+    sloth_permutation_init_from_str(&sp, "297010851887946822574352571639152315287");
+
+    uint8_t challenge[16] = {0x13, 0x70, 0x10, 0x85, 0x18, 0x87, 0x94, 0x66, 0x22, 0x57, 0x41, 0x52, 0x57, 0x12, 0x39, 0x13};
+    size_t t = 200;
+
+    uint8_t proof[16], proof2[16], proof3[16], proof4[16], proof5[16];
+
+    sloth_generate_buffer_proof_vdf(&sp, proof, challenge, t, 16);
+    assert(sloth_verify_buffer_proof_vdf(&sp, proof, challenge, t, 16));
+
+    memcpy(challenge, proof, 16);
+
+    sloth_generate_buffer_proof_vdf(&sp, proof2, challenge, t, 16);
+    assert(sloth_verify_buffer_proof_vdf(&sp, proof2, challenge, t, 16));
+
+    // Add more iterations as required
+
+    assert(memcmp(proof, proof2) != 0);
+    // Add additional memcmp assertions as needed
+
+    sloth_permutation_clear(&sp);
 }
 
 void test_vdf07() {
-    // Implement test case VDF07 here
+    SlothPermutation sp;
+    sloth_permutation_init_from_str(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
+
+    uint8_t challenge[32] = {0xc8, 0x77, 0x4b, 0xec, 0xa8, 0x35, 0x21, 0x40, 0x89, 0x86, 0x0e, 0x8b, 0x01, 0x15, 0x7c, 0x6c, 0x88, 0x3c, 0x70, 0xf4, 0xa2, 0x5e, 0x83, 0xd1, 0x90, 0xb5, 0x77, 0xf7, 0xf5, 0x6b, 0xcf, 0xd3};
+    size_t t = 200;
+
+    uint8_t proof[32], proof2[32], proof3[32], proof4[32], proof5[32];
+
+    sloth_generate_buffer_proof_vdf(&sp, proof, challenge, t, 32);
+    assert(sloth_verify_buffer_proof_vdf(&sp, proof, challenge, t, 32));
+
+    memcpy(challenge, proof, 32);
+
+    sloth_generate_buffer_proof_vdf(&sp, proof2, challenge, t, 32);
+    assert(sloth_verify_buffer_proof_vdf(&sp, proof2, challenge, t, 32));
+
+    // Add more iterations as required
+
+    assert(memcmp(proof, proof2) != 0);
+    // Add additional memcmp assertions as needed
+
+    sloth_permutation_clear(&sp);
 }
 
 void test_vdf08() {
@@ -94,7 +136,25 @@ void test_vdf09() {
 }
 
 void test_vdf09b() {
-    // Implement test case VDF09b here
+    SlothPermutation sp;
+    sloth_permutation_init_from_str(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
+
+    mpz_t challenge;
+    mpz_init_set_str(challenge, "64528909272528537054813745700492621300445458085274430251275671551785582282347", 10);
+    size_t t = 10;
+
+    mpz_t proof;
+    mpz_init(proof);
+
+    for (int i = 0; i < 8; i++) {
+        mpz_add_ui(challenge, challenge, (unsigned long int) pow(2, 252));
+        sloth_generate_proof_vdf(&sp, proof, challenge, t);
+        assert(sloth_verify_proof_vdf(&sp, proof, challenge, t));
+    }
+
+    mpz_clear(challenge);
+    mpz_clear(proof);
+    sloth_permutation_clear(&sp);
 }
 
 int main() {
