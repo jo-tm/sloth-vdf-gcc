@@ -4,7 +4,7 @@
 
 void test_vdf01() {
     SlothPermutation sp;
-    sloth_permutation_set_prime(&sp, "23")
+    sloth_permutation_set_prime(&sp, "23");
 
     mpz_t x, y;
     mpz_init_set_ui(x, 10);
