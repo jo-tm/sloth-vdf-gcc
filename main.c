@@ -6,7 +6,7 @@ int main() {
     SlothPermutation* sp = sloth_permutation_new();
 
     mpz_t t, x, y;
-    mpz_init_set_ui(t, 100);
+    mpz_init_set_ui(t, 1000);
     mpz_init_set_str(x, "12345678901234567890", 10);
     mpz_init(y);
 
