@@ -191,4 +191,8 @@ void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_l
     mpz_clear(big8);
 }
 
+void sloth_permutation_set_from_bigint(SlothPermutation* sp, mpz_t p) {
+    mpz_init_set(sp->p, p);
+}
+
 
