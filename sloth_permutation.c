@@ -169,6 +169,23 @@ SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t
     return sp;
 }
 
+void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_len, int offset) {
+    if (offset + byte_len > byte_len) {
+        throw_error("Out of bounds");
+    }
+    mpz_t y, big256, big8;
+    mpz_init_set(y, x);
+    mpz_init_set_ui(big256, 256);
+    mpz_init_set_ui(big8, 8);
 
+    for (int i = 0; i < byte_len; i++) {
+        buffer[offset + i] = mpz_fdiv_ui(y, big256);
+        mpz_fdiv_q_ui(y, y, 256);
+    }
+
+    mpz_clear(y);
+    mpz_clear(big256);
+    mpz_clear(big8);
+}
 
 
