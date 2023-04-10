@@ -20,16 +20,14 @@ endif ()
 
 include_directories(${GMP_INCLUDE_DIR})
 
-add_executable(sloth_permutation_example main.c sloth_permutation.c)
-
-# Link the GMP library
-target_link_libraries(sloth_permutation_example ${GMP_LIBRARY})
+add_library(sloth_permutation sloth_permutation.c) # Create sloth_permutation library
+add_executable(sloth_permutation_example main.c)
+target_link_libraries(sloth_permutation_example sloth_permutation ${GMP_LIBRARY}) # Link the library
 
 # Testing
 enable_testing()
 
 add_executable(test_sloth_permutation test_sloth_permutation.c)
-target_link_libraries(test_sloth_permutation sloth_permutation ${GMP_LIBRARY})
+target_link_libraries(test_sloth_permutation sloth_permutation ${GMP_LIBRARY}) # Link the library
 
 add_test(NAME test_sloth_permutation COMMAND test_sloth_permutation)
-
