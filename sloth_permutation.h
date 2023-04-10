@@ -2,7 +2,6 @@
 #define SLOTH_PERMUTATION_H
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <gmp.h>
 
 struct SlothPermutation {
@@ -21,16 +20,7 @@ void sloth_permutation_fast_pow(SlothPermutation* sp, mpz_t result, mpz_t base, 
 bool sloth_permutation_quad_res(SlothPermutation* sp, mpz_t x);
 void sloth_permutation_mod_sqrt_op(SlothPermutation* sp, mpz_t result, mpz_t x);
 
-void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, size_t t);
-bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t);
-
-SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset);
-void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t offset);
-SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset);
-void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_len, int offset); 
-void sloth_permutation_set_from_bigint(SlothPermutation* sp, mpz_t p);
-
-uint8_t* generate_buffer_proof_vdf(SlothPermutation* sp, const uint8_t* x, size_t byte_len, size_t t);
-bool verify_buffer_proof_vdf(SlothPermutation* sp, uint8_t* x, uint8_t* y, size_t byteLen, size_t t);
+void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t t);
+bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t);
 
 #endif // SLOTH_PERMUTATION_H
