@@ -152,4 +152,3 @@ bool verify_buffer_proof_vdf(SlothPermutation* sp, uint8_t* x, uint8_t* y, size_
     mpz_clear(y_mpz);
     return result;
 }
-
