@@ -95,100 +95,31 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
 #include <stdlib.h>
 
 SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset) {
-    uint8_t first = buffer[offset];
-    uint8_t last = buffer[offset + 7];
-    if (first == '\0' || last == '\0') {
-        printf("ERROR: Out of bounds");
-        exit(1);
-    }
-    uint64_t lo = (uint64_t)first +
-            ((uint64_t)buffer[++offset] << 8) +
-            ((uint64_t)buffer[++offset] << 16) +
-            ((uint64_t)buffer[++offset] << 24);
-
-    uint64_t hi = (uint64_t)buffer[++offset] +
-            ((uint64_t)buffer[++offset] << 8) +
-            ((uint64_t)buffer[++offset] << 16) +
-            ((uint64_t)last << 24);
-
-    mpz_t result;
-    mpz_init(result);
-    mpz_set_ui(result, lo);
-    mpz_addmul_ui(result, result, (uint64_t)1 << 32);
-    mpz_add_ui(result, result, hi);
-
     SlothPermutation* sp = sloth_permutation_new();
-    sloth_permutation_set_from_bigint(sp, result);
-
+    if (!sp) {
+        return NULL;
+    }
+    mpz_set_ui(sp->p, 0);
+    mpz_import(sp->p, 8, -1, sizeof(buffer[0]), 0, 0, buffer + offset);
     return sp;
 }
 
 void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t offset) {
-    uint8_t first = buffer[offset];
-    uint8_t last = buffer[offset + 7];
-    if (first == '\0' || last == '\0') {
-        printf("ERROR: Out of bounds\n");
-        exit(1);
-    }
-
-    mpz_t y, big256, big8, temp;
-    mpz_inits(y, big256, big8, temp, NULL);
-
-    mpz_set(y, x);
-    mpz_set_ui(big256, 256);
-    mpz_set_ui(big8, 8);
-
-    for (int i = 0; i < 8; i++) {
-        mpz_mod(temp, y, big256);
-        buffer[offset + i] = mpz_get_ui(temp);
-        mpz_fdiv_q(y, y, big256);
-    }
-
-    mpz_clears(y, big256, big8, temp, NULL);
+    mpz_export(buffer + offset, NULL, -1, sizeof(buffer[0]), 0, 0, x);
 }
 
 SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset) {
-    if (offset + byte_len > byte_len) {
-        printf("ERROR: Out of bounds\n");
-        exit(1);
-    }
-    mpz_t result;
-    mpz_init(result);
-
-    for (size_t i = 0; i < byte_len; i++) {
-        mpz_t temp;
-        mpz_init_set_ui(temp, buffer[offset + i]);
-        mpz_mul_2exp(temp, temp, i * 8);
-        mpz_add(result, result, temp);
-        mpz_clear(temp);
-    }
-
     SlothPermutation* sp = sloth_permutation_new();
-    sloth_permutation_set_from_bigint(sp, result);
-
-    mpz_clear(result);
-
+    if (!sp) {
+        return NULL;
+    }
+    mpz_set_ui(sp->p, 0);
+    mpz_import(sp->p, byte_len, -1, sizeof(buffer[0]), 0, 0, buffer + offset);
     return sp;
 }
 
 void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_len, int offset) {
-    if (offset + byte_len > byte_len) {
-        printf("ERROR: Out of bounds\n");
-        exit(1);
-    }
-    mpz_t y, big256, big8;
-    mpz_init_set(y, x);
-    mpz_init_set_ui(big256, 256);
-    mpz_init_set_ui(big8, 8);
-
-    for (int i = 0; i < byte_len; i++) {
-        buffer[offset + i] = mpz_fdiv_ui(y, big256);
-        mpz_fdiv_q_ui(y, y, 256);
-    }
-
-    mpz_clear(y);
-    mpz_clear(big256);
-    mpz_clear(big8);
+    mpz_export(buffer + offset, NULL, -1, sizeof(buffer[0]), 0, 0, x);
 }
 
 void sloth_permutation_set_from_bigint(SlothPermutation* sp, mpz_t p) {
