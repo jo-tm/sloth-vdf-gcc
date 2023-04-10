@@ -126,4 +126,44 @@ void sloth_permutation_set_from_bigint(SlothPermutation* sp, mpz_t p) {
     mpz_init_set(sp->p, p);
 }
 
+uint8_t* generate_buffer_proof_vdf(SlothPermutation* sp, const uint8_t* x, size_t byte_len, mpz_t p) {
+    mpz_t t, x_mpz, y;
+    mpz_inits(t, x_mpz, y, NULL);
+    SlothPermutation* temp_sp = sloth_permutation_new();
+    if (!temp_sp) {
+        mpz_clears(t, x_mpz, y, NULL);
+        return NULL;
+    }
+    mpz_set(temp_sp->p, p);
+    mpz_import(x_mpz, byte_len, -1, sizeof(x[0]), 0, 0, x);
+    sloth_generate_proof_vdf(temp_sp, y, x_mpz, t);
+    uint8_t* result = malloc(byte_len);
+    if (!result) {
+        mpz_clears(t, x_mpz, y, NULL);
+        sloth_permutation_free(temp_sp);
+        return NULL;
+    }
+    mpz_export(result, NULL, -1, sizeof(result[0]), 0, 0, y);
+    mpz_clears(t, x_mpz, y, NULL);
+    sloth_permutation_free(temp_sp);
+    return result;
+}
+
+bool verify_buffer_proof_vdf(SlothPermutation* sp, uint8_t* x, uint8_t* y, size_t byteLen, mpz_t p) {
+    mpz_t t, x_mpz, y_mpz;
+    mpz_inits(t, x_mpz, y_mpz, NULL);
+    SlothPermutation* temp_sp = sloth_permutation_new();
+    if (!temp_sp) {
+        mpz_clears(t, x_mpz, y_mpz, NULL);
+        return false;
+    }
+    mpz_set(temp_sp->p, p);
+    mpz_import(x_mpz, byteLen, -1, sizeof(x[0]), 0, 0, x);
+    mpz_import(y_mpz, byteLen, -1, sizeof(y[0]), 0, 0, y);
+    bool result = sloth_verify_proof_vdf(temp_sp, y_mpz, x_mpz, t);
+    mpz_clears(t, x_mpz, y_mpz, NULL);
+    sloth_permutation_free(temp_sp);
+    return result;
+}
+
 
