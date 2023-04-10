@@ -87,3 +87,50 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t) {
     bool result = mpz_cmp(x, y) == 0 || mpz_cmp(x, y) == mpz_cmp(sp->p, y);
     return result;
 }
+
+uint64_t readBigUInt64LE(const uint8_t* buffer, size_t offset) {
+    uint64_t lo = buffer[offset] +
+                  buffer[++offset] * (uint64_t) 0x100 +
+                  buffer[++offset] * (uint64_t) 0x10000 +
+                  buffer[++offset] * (uint64_t) 0x1000000;
+
+    uint64_t hi = buffer[++offset] +
+                  buffer[++offset] * (uint64_t) 0x100 +
+                  buffer[++offset] * (uint64_t) 0x10000 +
+                  buffer[++offset] * (uint64_t) 0x1000000;
+
+    return lo + (hi << 32);
+}
+
+void writeBigUInt64LE(uint64_t x, uint8_t* buffer, size_t offset) {
+    for (size_t i = 0; i < 8; i++) {
+        buffer[offset + i] = (uint8_t) (x & 0xFF);
+        x >>= 8;
+    }
+}
+
+void readBigUIntLE(mpz_t result, const uint8_t* buffer, size_t byteLen, size_t offset) {
+    mpz_set_ui(result, 0);
+
+    for (size_t i = 0; i < byteLen; i++) {
+        mpz_t tmp;
+        mpz_init(tmp);
+        mpz_ui_pow_ui(tmp, 2, (unsigned long) (i * 8));
+        mpz_mul_ui(tmp, tmp, buffer[offset + i]);
+        mpz_add(result, result, tmp);
+        mpz_clear(tmp);
+    }
+}
+
+void writeBigUIntLE(mpz_t x, uint8_t* buffer, size_t byteLen, size_t offset) {
+    mpz_t tmp;
+    mpz_init(tmp);
+    mpz_set(tmp, x);
+
+    for (size_t i = 0; i < byteLen; i++) {
+        buffer[offset + i] = (uint8_t) mpz_mod_ui(NULL, tmp, 256);
+        mpz_fdiv_q_ui(tmp, tmp, 256);
+    }
+
+    mpz_clear(tmp);
+}
