@@ -2,6 +2,7 @@
 #define SLOTH_PERMUTATION_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include <gmp.h>
 
 struct SlothPermutation {
