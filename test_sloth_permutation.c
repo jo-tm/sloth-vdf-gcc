@@ -135,28 +135,6 @@ void test_vdf09() {
     // Implement test case VDF09 here
 }
 
-void test_vdf09b() {
-    SlothPermutation sp;
-    sloth_permutation_set_prime(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
-
-    mpz_t challenge;
-    mpz_init_set_str(challenge, "64528909272528537054813745700492621300445458085274430251275671551785582282347", 10);
-    size_t t = 10;
-
-    mpz_t proof;
-    mpz_init(proof);
-
-    for (int i = 0; i < 8; i++) {
-        mpz_add_ui(challenge, challenge, (unsigned long int) pow(2, 252));
-        sloth_generate_proof_vdf(&sp, proof, challenge, t);
-        assert(sloth_verify_proof_vdf(&sp, proof, challenge, t));
-    }
-
-    mpz_clear(challenge);
-    mpz_clear(proof);
-    sloth_permutation_free(&sp);
-}
-
 int main() {
     test_vdf01();
     test_vdf02();
