@@ -145,6 +145,8 @@ int main() {
     test_vdf02();
     test_vdf04();
     test_vdf05();
+    test_vdf06();
+    test_vdf07();
     // Add calls to the other test functions here
     printf("All tests passed.\n");
     return 0;
