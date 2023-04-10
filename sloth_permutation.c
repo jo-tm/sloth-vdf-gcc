@@ -1,6 +1,5 @@
 #include "sloth_permutation.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 SlothPermutation* sloth_permutation_new(void) {
     SlothPermutation* sp = malloc(sizeof(SlothPermutation));
@@ -68,17 +67,17 @@ void sloth_permutation_mod_sqrt_op(SlothPermutation* sp, mpz_t result, mpz_t x) 
     mpz_clear(temp);
 }
 
-void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, size_t t) {
+void sloth_generate_proof_vdf(SlothPermutation* sp, mpz_t result, mpz_t x, mpz_t t) {
     mpz_mod(x, x, sp->p);
-    for (size_t i = 0; i < t; i++) {
+    for (mpz_t i; mpz_cmp(i, t) < 0; mpz_add_ui(i, i, 1)) {
         sloth_permutation_mod_sqrt_op(sp, x, x);
     }
     mpz_set(result, x);
 }
 
-bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t) {
+bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
     mpz_mod(x, x, sp->p);
-    for (size_t i = 0; i < t; i++) {
+    for (mpz_t i; mpz_cmp(i, t) < 0; mpz_add_ui(i, i, 1)) {
         mpz_powm_ui(y, y, 2, sp->p);
     }
     if (!sloth_permutation_quad_res(sp, y)) {
@@ -86,69 +85,5 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, size_t t) {
         mpz_mod(y, y, sp->p);
     }
     bool result = mpz_cmp(x, y) == 0 || mpz_cmp(x, y) == mpz_cmp(sp->p, y);
-    return result;
-}
-// I/O
-
-#include <stdint.h>
-#include <stdlib.h>
-
-SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset) {
-    SlothPermutation* sp = sloth_permutation_new();
-    if (!sp) {
-        return NULL;
-    }
-    mpz_set_ui(sp->p, 0);
-    mpz_import(sp->p, 8, -1, sizeof(buffer[0]), 0, 0, buffer + offset);
-    return sp;
-}
-
-void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t offset) {
-    mpz_export(buffer + offset, NULL, -1, sizeof(buffer[0]), 0, 0, x);
-}
-
-SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset) {
-    SlothPermutation* sp = sloth_permutation_new();
-    if (!sp) {
-        return NULL;
-    }
-    mpz_set_ui(sp->p, 0);
-    mpz_import(sp->p, byte_len, -1, sizeof(buffer[0]), 0, 0, buffer + offset);
-    return sp;
-}
-
-void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_len, int offset) {
-    mpz_export(buffer + offset, NULL, -1, sizeof(buffer[0]), 0, 0, x);
-}
-
-void sloth_permutation_set_from_bigint(SlothPermutation* sp, mpz_t p) {
-    mpz_init_set(sp->p, p);
-}
-
-uint8_t* generate_buffer_proof_vdf(SlothPermutation* sp, const uint8_t* x, size_t byte_len, size_t t) {
-    uint8_t* ret = calloc(byte_len, sizeof(uint8_t));
-    if (!ret) {
-        return NULL;
-    }
-    mpz_t x_mpz, mod_op_res;
-    mpz_init(x_mpz);
-    mpz_init(mod_op_res);
-    SlothPermutation_read_biguint_le(sp, x_mpz, x, byte_len, 0);
-    SlothPermutation_mod_op(sp, mod_op_res, x_mpz, t);
-    SlothPermutation_write_biguint_le(sp, mod_op_res, ret, byte_len, 0);
-    mpz_clear(x_mpz);
-    mpz_clear(mod_op_res);
-    return ret;
-}
-
-bool verify_buffer_proof_vdf(SlothPermutation* sp, uint8_t* x, uint8_t* y, size_t byte_len, size_t t) {
-    mpz_t x_mpz, y_mpz;
-    mpz_init(x_mpz);
-    mpz_init(y_mpz);
-    SlothPermutation_read_biguint_le(sp, x_mpz, x, byte_len, 0);
-    SlothPermutation_read_biguint_le(sp, y_mpz, y, byte_len, 0);
-    bool result = SlothPermutation_mod_verif(sp, y_mpz, x_mpz, t);
-    mpz_clear(x_mpz);
-    mpz_clear(y_mpz);
     return result;
 }
