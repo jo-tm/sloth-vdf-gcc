@@ -61,11 +61,14 @@ void test_vdf04() {
 }
 
 void test_vdf05() {
-    mpz_t x, y;
+    mpz_t x, y, temp;
     mpz_init_set_ui(x, 0x789acdef);
     mpz_mul_2exp(x, x, 32);
     mpz_add_ui(x, x, 0x06543210);
-    mpz_add(x, x, mpz_mul_2exp(x, x, 64));
+
+    mpz_init(temp);
+    mpz_mul_2exp(temp, x, 64);
+    mpz_add(x, x, temp);
 
     uint8_t arr[16];
 
@@ -76,6 +79,7 @@ void test_vdf05() {
 
     mpz_clear(x);
     mpz_clear(y);
+    mpz_clear(temp);
 }
 
 void test_vdf06() {
