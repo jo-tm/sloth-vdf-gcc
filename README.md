@@ -45,3 +45,10 @@ And then run the tests:
 ```
 ctest
 ```
+
+## Performance
+
+## Performance
+
+Approx 1000 steps per second on a Macbook Pro Intel for the 1024 bits version.
+
