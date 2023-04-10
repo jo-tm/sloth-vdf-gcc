@@ -96,7 +96,7 @@ bool sloth_verify_proof_vdf(SlothPermutation* sp, mpz_t y, mpz_t x, mpz_t t) {
 SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset) {
     uint8_t first = buffer[offset];
     uint8_t last = buffer[offset + 7];
-    if (first == NULL || last == NULL) {
+    if (first == '\0' || last == '\0') {
         perror("Out of bounds");
         return NULL;
     }
