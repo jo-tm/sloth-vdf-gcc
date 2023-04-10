@@ -1,5 +1,6 @@
 #include "sloth_permutation.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 SlothPermutation* sloth_permutation_new(void) {
     SlothPermutation* sp = malloc(sizeof(SlothPermutation));
