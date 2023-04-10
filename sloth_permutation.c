@@ -97,8 +97,8 @@ SlothPermutation* read_biguint64_le(uint8_t* buffer, int offset) {
     uint8_t first = buffer[offset];
     uint8_t last = buffer[offset + 7];
     if (first == '\0' || last == '\0') {
-        perror("Out of bounds");
-        return NULL;
+        printf("ERROR: Out of bounds");
+        exit(1);
     }
     uint64_t lo = (uint64_t)first +
             ((uint64_t)buffer[++offset] << 8) +
@@ -126,7 +126,7 @@ void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t o
     uint8_t first = buffer[offset];
     uint8_t last = buffer[offset + 7];
     if (first == '\0' || last == '\0') {
-        printf("Out of bounds\n");
+        printf("ERROR: Out of bounds\n");
         exit(1);
     }
 
@@ -148,7 +148,8 @@ void write_biguint64_le(SlothPermutation *sp, mpz_t x, uint8_t *buffer, size_t o
 
 SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t offset) {
     if (offset + byte_len > byte_len) {
-        return NULL;
+        printf("ERROR: Out of bounds\n");
+        exit(1);
     }
     mpz_t result;
     mpz_init(result);
@@ -171,7 +172,8 @@ SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t
 
 void write_biguint_le(SlothPermutation* sp, mpz_t x, uint8_t* buffer, int byte_len, int offset) {
     if (offset + byte_len > byte_len) {
-        throw_error("Out of bounds");
+        printf("ERROR: Out of bounds\n");
+        exit(1);
     }
     mpz_t y, big256, big8;
     mpz_init_set(y, x);
