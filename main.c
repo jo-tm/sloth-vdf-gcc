@@ -19,7 +19,6 @@ int main() {
     bool is_valid = sloth_verify_proof_vdf(sp, y, x, t);
     printf("Verification result: %s\n", is_valid ? "True" : "False");
 
-    mpz_clear(t);
     mpz_clear(x);
     mpz_clear(y);
     sloth_permutation_free(sp);
