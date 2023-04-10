@@ -134,3 +134,33 @@ void writeBigUIntLE(mpz_t x, uint8_t* buffer, size_t byteLen, size_t offset) {
 
     mpz_clear(tmp);
 }
+
+void sloth_generate_buffer_proof_vdf(SlothPermutation* sp, uint8_t* result, const uint8_t* x, size_t t, size_t byteLen) {
+    mpz_t x_bigint, y_bigint;
+    mpz_init(x_bigint);
+    mpz_init(y_bigint);
+
+    readBigUIntLE(x_bigint, x, byteLen, 0);
+    sloth_generate_proof_vdf(sp, y_bigint, x_bigint, t);
+    writeBigUIntLE(y_bigint, result, byteLen, 0);
+
+    mpz_clear(x_bigint);
+    mpz_clear(y_bigint);
+}
+
+bool sloth_verify_buffer_proof_vdf(SlothPermutation* sp, const uint8_t* x, const uint8_t* y, size_t t, size_t byteLen) {
+    mpz_t x_bigint, y_bigint;
+    mpz_init(x_bigint);
+    mpz_init(y_bigint);
+
+    readBigUIntLE(x_bigint, x, byteLen, 0);
+    readBigUIntLE(y_bigint, y, byteLen, 0);
+
+    bool result = sloth_verify_proof_vdf(sp, y_bigint, x_bigint, t);
+
+    mpz_clear(x_bigint);
+    mpz_clear(y_bigint);
+
+    return result;
+}
+
