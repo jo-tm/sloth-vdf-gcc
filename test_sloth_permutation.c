@@ -4,7 +4,7 @@
 
 void test_vdf01() {
     SlothPermutation sp;
-    sloth_permutation_init(&sp, 23);
+    sloth_permutation_set_prime(&sp, "23")
 
     mpz_t x, y;
     mpz_init_set_ui(x, 10);
@@ -24,7 +24,7 @@ void test_vdf01() {
 
 void test_vdf02() {
     SlothPermutation sp;
-    sloth_permutation_init_from_str(&sp, "73237431696005972674723595250817150843");
+    sloth_permutation_set_prime(&sp, "73237431696005972674723595250817150843");
 
     mpz_t x, y;
     mpz_init_set_str(x, "808080818080808080818080", 10);
@@ -79,7 +79,7 @@ void test_vdf05() {
 
 void test_vdf06() {
     SlothPermutation sp;
-    sloth_permutation_init_from_str(&sp, "297010851887946822574352571639152315287");
+    sloth_permutation_set_prime(&sp, "297010851887946822574352571639152315287");
 
     uint8_t challenge[16] = {0x13, 0x70, 0x10, 0x85, 0x18, 0x87, 0x94, 0x66, 0x22, 0x57, 0x41, 0x52, 0x57, 0x12, 0x39, 0x13};
     size_t t = 200;
@@ -104,7 +104,7 @@ void test_vdf06() {
 
 void test_vdf07() {
     SlothPermutation sp;
-    sloth_permutation_init_from_str(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
+    sloth_permutation_set_prime(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
 
     uint8_t challenge[32] = {0xc8, 0x77, 0x4b, 0xec, 0xa8, 0x35, 0x21, 0x40, 0x89, 0x86, 0x0e, 0x8b, 0x01, 0x15, 0x7c, 0x6c, 0x88, 0x3c, 0x70, 0xf4, 0xa2, 0x5e, 0x83, 0xd1, 0x90, 0xb5, 0x77, 0xf7, 0xf5, 0x6b, 0xcf, 0xd3};
     size_t t = 200;
@@ -137,7 +137,7 @@ void test_vdf09() {
 
 void test_vdf09b() {
     SlothPermutation sp;
-    sloth_permutation_init_from_str(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
+    sloth_permutation_set_prime(&sp, "64106875808534963770974826322234655855469213855659218736479077548818158667371");
 
     mpz_t challenge;
     mpz_init_set_str(challenge, "64528909272528537054813745700492621300445458085274430251275671551785582282347", 10);
