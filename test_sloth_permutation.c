@@ -96,7 +96,7 @@ void test_vdf06() {
 
     // Add more iterations as required
 
-    assert(memcmp(proof, proof2, 16) != 0);
+    assert(memcmp(proof, proof2, (unsigned long) 16) != 0);
     // Add additional memcmp assertions as needed
 
     sloth_permutation_free(&sp);
@@ -121,7 +121,7 @@ void test_vdf07() {
 
     // Add more iterations as required
 
-    assert(memcmp(proof, proof2, 32) != 0);
+    assert(memcmp(proof, proof2, (unsigned long) 32) != 0);
     // Add additional memcmp assertions as needed
 
     sloth_permutation_free(&sp);
