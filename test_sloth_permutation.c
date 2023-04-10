@@ -111,7 +111,7 @@ void test_vdf07() {
 
     uint8_t proof[32], proof2[32], proof3[32], proof4[32], proof5[32];
 
-    sloth_ fgenerate_buffer_proof_vdf(&sp, proof, challenge, t, 32);
+    generate_buffer_proof_vdf(&sp, proof, challenge, t, 32);
     assert(sloth_verify_buffer_proof_vdf(&sp, proof, challenge, t, 32));
 
     memcpy(challenge, proof, 32);
