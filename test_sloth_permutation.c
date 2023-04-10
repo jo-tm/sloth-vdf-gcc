@@ -96,7 +96,7 @@ void test_vdf06() {
 
     // Add more iterations as required
 
-    assert(memcmp(proof, proof2) != 0);
+    assert(memcmp(proof, proof2, 16) != 0);
     // Add additional memcmp assertions as needed
 
     sloth_permutation_free(&sp);
@@ -111,7 +111,7 @@ void test_vdf07() {
 
     uint8_t proof[32], proof2[32], proof3[32], proof4[32], proof5[32];
 
-    sloth_generate_buffer_proof_vdf(&sp, proof, challenge, t, 32);
+    sloth_ fgenerate_buffer_proof_vdf(&sp, proof, challenge, t, 32);
     assert(sloth_verify_buffer_proof_vdf(&sp, proof, challenge, t, 32));
 
     memcpy(challenge, proof, 32);
@@ -121,7 +121,7 @@ void test_vdf07() {
 
     // Add more iterations as required
 
-    assert(memcmp(proof, proof2) != 0);
+    assert(memcmp(proof, proof2, 32) != 0);
     // Add additional memcmp assertions as needed
 
     sloth_permutation_free(&sp);
