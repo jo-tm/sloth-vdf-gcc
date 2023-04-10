@@ -164,7 +164,7 @@ SlothPermutation* read_biguint_le(const uint8_t* buffer, size_t byte_len, size_t
     }
 
     SlothPermutation* sp = sloth_permutation_new();
-    sloth_permutation_set_mpz(sp, result);
+    sloth_permutation_set_from_bigint(sp, result);
 
     mpz_clear(result);
 
