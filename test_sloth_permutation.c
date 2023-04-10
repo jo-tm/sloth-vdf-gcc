@@ -20,7 +20,7 @@ void test_vdf01() {
 
     mpz_clear(x);
     mpz_clear(y);
-    sloth_permutation_free(&sp);
+    mpz_clear(sp.p);
 }
 
 void test_vdf02() {
@@ -40,7 +40,7 @@ void test_vdf02() {
 
     mpz_clear(x);
     mpz_clear(y);
-    sloth_permutation_free(&sp);
+    mpz_clear(sp.p);
 }
 
 void test_vdf04() {
@@ -104,7 +104,7 @@ void test_vdf06() {
     assert(memcmp(proof, proof2, (unsigned long) 16) != 0);
     // Add additional memcmp assertions as needed
 
-    sloth_permutation_free(&sp);
+    mpz_clear(sp.p);
 }
 
 void test_vdf07() {
@@ -129,7 +129,7 @@ void test_vdf07() {
     assert(memcmp(proof, proof2, (unsigned long) 32) != 0);
     // Add additional memcmp assertions as needed
 
-    sloth_permutation_free(&sp);
+    mpz_clear(sp.p);
 }
 
 void test_vdf08() {
